@@ -3,6 +3,7 @@ import "./Map.css";
 
 import React, { useEffect, useRef, useState } from "react";
 
+import { Input } from "semantic-ui-react";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import MapboxWorker from "worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker";
 import mapboxgl from "mapbox-gl/dist/mapbox-gl-csp";
@@ -13,6 +14,7 @@ mapboxgl.workerClass = MapboxWorker;
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const Map = () => {
+  const [adress, setAdress] = useState("70 rue Rodier 75009 Paris");
   const mapContainer = useRef();
   const [lng, setLng] = useState(2.3445091846329014);
   const [lat, setLat] = useState(48.88130547828772);
@@ -30,6 +32,13 @@ const Map = () => {
 
   return (
     <div>
+      <Input
+        focus
+        className="adress-bar"
+        placeholder={adress}
+        action="Search"
+        onChange={(e) => setAdress(e.target.value)}
+      />
       <div className="map-container" ref={mapContainer} />
     </div>
   );
