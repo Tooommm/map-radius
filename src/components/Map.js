@@ -1,35 +1,39 @@
-import "mapbox-gl/dist/mapbox-gl.css";
 import "./Map.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
+import Geocoder from "react-mapbox-gl-geocoder";
 import { Input } from "semantic-ui-react";
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import MapboxWorker from "worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker";
-import mapboxgl from "mapbox-gl/dist/mapbox-gl-csp";
+import ReactMapGL from "react-map-gl";
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API_TOKEN;
 
-mapboxgl.workerClass = MapboxWorker;
-mapboxgl.accessToken = MAPBOX_TOKEN;
+const mapStyle = {
+  width: "100%",
+  height: 600,
+};
+
+const params = {
+  country: "fr",
+};
 
 const Map = () => {
   const [adress, setAdress] = useState("70 rue Rodier 75009 Paris");
-  const mapContainer = useRef();
-  const [lng, setLng] = useState(2.3445091846329014);
-  const [lat, setLat] = useState(48.88130547828772);
-  const [zoom, setZoom] = useState(14);
+  const [state, setState] = useState({
+    viewport: {
+      latitude: 48.88130547828772,
+      longitude: 2.3445091846329014,
+      zoom: 15,
+    },
+  });
 
-  useEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/light-v10",
-      center: [lng, lat],
-      zoom: zoom,
+  const onSelected = (viewport) => {
+    setState({
+      viewport,
     });
-    return () => map.remove();
-  }, []);
+  };
 
+  const { viewport } = state;
   return (
     <div>
       <Input
@@ -39,7 +43,21 @@ const Map = () => {
         action="Search"
         onChange={(e) => setAdress(e.target.value)}
       />
-      <div className="map-container" ref={mapContainer} />
+      <Geocoder
+        mapboxApiAccessToken={MAPBOX_TOKEN}
+        onSelected={onSelected}
+        viewport={viewport}
+        hideOnSelect={true}
+        value=""
+        queryParams={params}
+      />
+      <ReactMapGL
+        mapboxApiAccessToken={MAPBOX_TOKEN}
+        mapStyle="mapbox://styles/mapbox/light-v10"
+        {...viewport}
+        {...mapStyle}
+        onViewportChange={(viewport) => setState({ viewport })}
+      ></ReactMapGL>
     </div>
   );
 };
