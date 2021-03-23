@@ -1,10 +1,10 @@
 import "./Map.css";
 
 import React, { useState } from "react";
+import ReactMapGL, { Marker } from "react-map-gl";
 
 import Geocoder from "react-mapbox-gl-geocoder";
 import { Input } from "semantic-ui-react";
-import ReactMapGL from "react-map-gl";
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API_TOKEN;
 
@@ -25,15 +25,22 @@ const Map = () => {
       longitude: 2.3445091846329014,
       zoom: 15,
     },
+    tempMarker: null,
+    markers: [],
   });
 
-  const onSelected = (viewport) => {
+  const onSelected = (viewport, item) => {
     setState({
       viewport,
+      tempMarker: {
+        name: item.place_name,
+        longitude: item.center[0],
+        latitude: item.center[1],
+      },
     });
   };
 
-  const { viewport } = state;
+  const { viewport, tempMarker } = state;
   return (
     <div>
       <Input
@@ -57,7 +64,18 @@ const Map = () => {
         {...viewport}
         {...mapStyle}
         onViewportChange={(viewport) => setState({ viewport })}
-      ></ReactMapGL>
+      >
+        {tempMarker && (
+          <Marker
+            longitude={tempMarker.longitude}
+            latitude={tempMarker.latitude}
+          >
+            <div className="marker temporary-marker">
+              <span></span>
+            </div>
+          </Marker>
+        )}
+      </ReactMapGL>
     </div>
   );
 };
