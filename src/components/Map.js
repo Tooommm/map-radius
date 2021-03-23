@@ -18,7 +18,7 @@ const params = {
 };
 
 const Map = () => {
-  const [adress, setAdress] = useState("70 rue Rodier 75009 Paris");
+  const [adress, setAdress] = useState(undefined);
   const [state, setState] = useState({
     viewport: {
       latitude: 48.88130547828772,
